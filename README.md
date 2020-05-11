@@ -4,38 +4,58 @@
 +++++++ MODELS +++++++
 
 Class User():
+	
 	firstname: CharFeild()
+
 	lastname: CharField() 
+	
 	username: CharFeild()
+	
 	password: CharField() 
+	
 	Courses: ArrayField(ForiegnKeyField)
 
 Class Administrator():
+	
 	firstname: CharField()
+	
 	lastname: CharField()
+	
 	username: CharField()
+	
 	password: CharField()
+	
 	created_Courses: ArrayField(ForiegnKeyField)
+	
 	date_creted: 
 
 Class Course():
+	
 	cours_name: CharField(unique=True)
+	
 	course_keyworkds: CharField() 
+	
 	administrator: CharField()
+	
 	descrption: TextField()
+	
 	Milestones: ArrayField(ForiegnKeyField)
+	
 	Certification: BooleanField()
 
 Class Milestone():
+
 	course: ForiegnKeyField()
+
 	prompt: ArrayField(UPLOADEDADMINFILES)
-	Answer: ArrayField(UPLOADEDUSERFILES)
+
+	answer: ArrayField(UPLOADEDUSERFILES)
 
 
 +++++++ ROUTES +++++++
 
 ----- User Routes ----- 
-
+```
 POST /api/v1/users/register
 	
 	Create New User
@@ -80,7 +100,6 @@ PUT /api/v1/admins/<id>
 	Updates an Admin Profile 
 
 
-
 ----- Course Routes ----- 
 
 POST /api/v1/courses
@@ -120,3 +139,4 @@ PUT /api/v1/milestones/<id>
 GET /api/v1/milestones/<id>
 
 	Shows A Milestone
+```
