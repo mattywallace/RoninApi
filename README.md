@@ -8,12 +8,16 @@ Class User():
 	firstname: CharFeild()
 
 	lastname: CharField() 
+
+	email: CharField(unique=true)
 	
-	username: CharFeild()
+	username: CharFeild(unique=true)
 	
 	password: CharField() 
 	
-	Courses: ArrayField(ForiegnKeyField)
+	current_courses: ArrayField(ForiegnKeyField( Course, backref='users'))
+
+	completed_courses: ArrayField(ForiegnKeyField( Course, backref='users'))
 
 Class Administrator():
 	
@@ -25,9 +29,9 @@ Class Administrator():
 	
 	password: CharField()
 	
-	created_Courses: ArrayField(ForiegnKeyField)
+	created_Courses: ArrayField(ForiegnKeyField( Course, backref='admins'))
 	
-	date_creted: 
+	date_creted: DateField()
 
 Class Course():
 	
@@ -45,12 +49,13 @@ Class Course():
 
 Class Milestone():
 
-	course: ForiegnKeyField()
+	course: ForiegnKeyField( Course, backref='miletones')
 
-	prompt: ArrayField(UPLOADEDADMINFILES)
+	prompt: TextField()
+
+	resources: ArrayField(UPLOADEDADMINFILES)
 
 	answer: ArrayField(UPLOADEDUSERFILES)
-
 
 +++++++ ROUTES +++++++
 
