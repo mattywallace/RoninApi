@@ -12,5 +12,5 @@ def testjson():
 
 
 if __name__ == '__main__':
-	models.initia
+	models.initialize()
 	app.run(debug=DEBUG, port=PORT)

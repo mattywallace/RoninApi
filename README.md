@@ -5,15 +5,15 @@
 
 Class User():
 	
-	firstname: CharFeild()
+	firstname = CharFeild()
 
-	lastname: CharField() 
+	lastname = CharField() 
 
-	email: CharField(unique=true)
+	email = CharField(unique=true)
 	
-	username: CharFeild(unique=true)
+	username = CharFeild(unique=true)
 	
-	password: CharField() 
+	password = CharField() 
 
 	is_admin = BooleanField()
 	
@@ -27,15 +27,15 @@ Class Enrollments():
 
 Class Course():
 	
-	cours_name: CharField(unique=True)
+	cours_name = CharField(unique=True)
 	
-	course_keyworkds: CharField() 
+	course_keyworkds = CharField() 
 	
-	administrator: ForeignKeyField()
+	administrator = ForeignKeyField()
 	
-	descrption: TextField()
+	descrption = TextField()
 	
-	Certification: BooleanField()
+	Certification = BooleanField()
 
 
 Class Submission():
@@ -46,16 +46,18 @@ Class Submission():
 
 	answer = CharField() --upload with cloudinare 
 
+	approved = BooleanField()
+
 
 Class Milestone():
 
-	course: ForiegnKeyField( Course, backref=' milestones')
+	course = ForiegnKeyField( Course, backref=' milestones')
 
-	prompt: TextField()
+	prompt = TextField()
 
-	resources: Charfield() -- cloudinare
+	resources = Charfield() -- cloudinare
 
-	answer: Charfield() -- cloudinare 
+	answer = Charfield() -- cloudinare 
 
 
 
@@ -125,4 +127,14 @@ PUT /api/v1/milestones/<id>
 GET /api/v1/milestones/<id>
 
 	Shows A Milestone
+
+--- Submission Route -----
+
+POST /api/v1/submissions/
+
+	create route for submissions
+
+Get /api/v1/submissions/<id>
+	
+	Shows the submissions
 ```
