@@ -14,24 +14,16 @@ Class User():
 	username: CharFeild(unique=true)
 	
 	password: CharField() 
-	
-	current_courses: ArrayField(ForiegnKeyField( Course, backref='users'))
 
-	completed_courses: ArrayField(ForiegnKeyField( Course, backref='users'))
+	is_admin = BooleanField()
+	
 
-Class Administrator():
+Class Enrollments():
 	
-	firstname: CharField()
-	
-	lastname: CharField()
-	
-	username: CharField()
-	
-	password: CharField()
-	
-	created_Courses: ArrayField(ForiegnKeyField( Course, backref='admins'))
-	
-	date_creted: DateField()
+	enrolled_user = ForeignKeyField()
+
+	enrolled_course = ForeignKeyField()
+
 
 Class Course():
 	
@@ -39,23 +31,35 @@ Class Course():
 	
 	course_keyworkds: CharField() 
 	
-	administrator: CharField()
+	administrator: ForeignKeyField()
 	
 	descrption: TextField()
 	
-	Milestones: ArrayField(ForiegnKeyField)
-	
 	Certification: BooleanField()
+
+
+Class Submission():
+	
+	milestone_sub = ForiegnKeyField( Mileston, backref='submissions')
+
+	student_sub = ForiegnKeyField( Mileston, backref='submissions')
+
+	answer = CharField() --upload with cloudinare 
+
 
 Class Milestone():
 
-	course: ForiegnKeyField( Course, backref='miletones')
+	course: ForiegnKeyField( Course, backref=' milestones')
 
 	prompt: TextField()
 
-	resources: MultipleFileField() this comes from WTForums docs
+	resources: Charfield() -- cloudinare
 
-	answer: MultipleFileField() this comes from WTForms docs
+	answer: Charfield() -- cloudinare 
+
+
+
+
 
 +++++++ ROUTES +++++++
 
@@ -82,29 +86,6 @@ PUT /api/v1/users/<id>
 	Updates a User Profile 
 
 
------ Admin Routes ----- 
-
-POST /api/v1/admins/register
-	
-	Creates a New Admin 
-
-GET /api/v1/admins/<id>
-
-	Admin Show Page 
-
-GET /api/v1/admins/logged_in_admin
-	
-	Allows current_admin
-
-DELETEL /api/v1/admins/<id>
-
-	Deletes Admin
-
-PUT /api/v1/admins/<id>	
-
-	Updates an Admin Profile 
-
-
 ----- Course Routes ----- 
 
 POST /api/v1/courses
@@ -129,9 +110,9 @@ GET /api/v1/courses
 
  ----- Milestone Routes ----- 
 
-POST /api/v1/milestones
+POST /api/v1/milestones/
 
-	Creates  Milestone
+	Creates Milestone
 
 DELETE /api/v1/milestones/<id>
 
