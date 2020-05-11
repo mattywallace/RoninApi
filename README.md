@@ -53,9 +53,9 @@ Class Milestone():
 
 	prompt: TextField()
 
-	resources: ArrayField(UPLOADEDADMINFILES)
+	resources: MultipleFileField() this comes from WTForums docs
 
-	answer: ArrayField(UPLOADEDUSERFILES)
+	answer: MultipleFileField() this comes from WTForms docs
 
 +++++++ ROUTES +++++++
 
