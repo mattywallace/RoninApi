@@ -19,7 +19,17 @@ app.secret_key = "Wake up, Neo..."
 login_manager =LoginManager()
 login_manager.init_app(app)
 
+@login_manager.user_loader
+def load_user(user_id):
+	try:
+		print("loading the following user")
+		user = models.User.get_by_id(user_id)
+		return user 
+	except models.DoesNotExist:
+		return None
+
 CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(courses, origins=['http://localhost3000'], supports_credentials=True)
 
 app.register_blueprint(users, url_prefix='/api/v1/users/')
 app.register_blueprint(courses, url_prefix='/api/v1/courses/')

@@ -2,7 +2,7 @@ import models
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import generate_password_hash, check_password_hash
 from playhouse.shortcuts import model_to_dict
-from flask_login import login_user
+from flask_login import login_user, current_user, logout_user
 
 
 
@@ -44,12 +44,14 @@ def create_user():
 				is_admin=payload['is_admin']
 			)
 	created_user_dict = model_to_dict(new_user)
-	print(new_user)
+	created_user_dict.pop('password')
+	print(created_user_dict)
+	print(type( created_user_dict))
 	return jsonify(
-		data=user_dict,
+		data=created_user_dict,
 		message=f"Successfully registered user {created_user_dict['email']}",
 		status=201
-		), 201
+	), 201
 
 @users.route('/login', methods=['POST'])
 def login():
@@ -119,7 +121,14 @@ def delete_user(id):
 
 
 
-
+@users.route('/logout', methods=['GET'])
+def logout():
+	logout_user()
+	return jsonify(
+		data={},
+		message="successfully logged out",
+		status=200
+	), 200
 
 
 

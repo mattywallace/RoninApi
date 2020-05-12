@@ -15,10 +15,10 @@ class User(UserMixin, Model):
 		database = DATABASE
 
 class Course(Model):	
-	cours_name = CharField(unique=True)	
+	course_name = CharField(unique=True)	
 	course_keywords = CharField() 	
 	administrator = ForeignKeyField( User , backref='courses')	
-	descrption = TextField()	
+	description = TextField()	
 	certification = BooleanField()
 	class Meta:
 		database = DATABASE
