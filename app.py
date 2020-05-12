@@ -7,10 +7,17 @@ from resources.enrollments import enrollments
 
 import models 
 from flask_cors import CORS
+from flask_login import LoginManager
+
+
 DEBUG=True 
 PORT=8000
 
 app = Flask(__name__)
+
+app.secret_key = "Wake up, Neo..."
+login_manager =LoginManager()
+login_manager.init_app(app)
 
 CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
 

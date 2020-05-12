@@ -1,6 +1,9 @@
 import models 
 from flask import Blueprint, request, jsonify
+from flask_bcrypt import generate_password_hash, check_password_hash
 from playhouse.shortcuts import model_to_dict
+from flask_login import login_user
+
 
 
 users = Blueprint('users', 'users')
@@ -20,22 +23,66 @@ def users_list():
 @users.route('/register', methods=['POST'])
 def create_user():
 	payload = request.get_json()
+	payload['email'] = payload['email'].lower()
+	payload['username'] = payload['username'].lower()
 	print(payload)
-	new_user = models.User.create(
-		firstname=payload['firstname'],
-		lastname=payload['lastname'],
-		email=payload['email'],
-		username=payload['username'],
-		password=payload['password'],
-		is_admin=payload['is_admin']
-	)
-	user_dict = model_to_dict(new_user)
+	try:
+		models.User.get(models.User.email == payload['email'])
+		return jsonify(
+			data={},
+			message=f"A user with the email {payload['email']} already exists",
+			status=401,
+		), 401
+	except models.DoesNotExist: 
+			pw_hash = generate_password_hash(payload['password'])
+			new_user = models.User.create(
+				firstname=payload['firstname'],
+				lastname=payload['lastname'],
+				email=payload['email'],
+				username=payload['username'],
+				password=pw_hash,
+				is_admin=payload['is_admin']
+			)
+	created_user_dict = model_to_dict(new_user)
 	print(new_user)
 	return jsonify(
 		data=user_dict,
-		message='Successfully registered a user',
+		message=f"Successfully registered user {created_user_dict['email']}",
 		status=201
 		), 201
+
+@users.route('/login', methods=['POST'])
+def login():
+	payload = request.get_json()
+	payload['email'] = payload['email'].lower()
+	payload['username'] = payload['username'].lower()
+	try:
+		user = models.User.get(models.User.email == payload['email'])
+		user_dict = model_to_dict(user)
+		password_is_good = check_password_hash(user_dict['password'], payload['password'])
+		if(password_is_good):
+			login_user(user)
+			user_dict.pop('password')
+			return jsonify(
+				data=user_dict,
+				message=f"successfully logged in {user_dict['email']}",
+				status=200
+			), 200 
+		else:
+			print('Password is no good')			
+			return jsonify(
+				data={},
+				message="Email or password is incorrect",
+				status=401
+			), 401
+	except models.DoesNotExist:
+		print('Username already exists')
+		return jsonify(
+			data={},
+			message='Email or Password is incorrect',
+			status=401
+			), 401 
+
 
 
 
