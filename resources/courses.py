@@ -48,34 +48,45 @@ def show_course(id):
 	
 
 
-@courses.route('/create', methods=['POST'])
+@courses.route('/create/<user_id>', methods=['POST'])
 @login_required
-def create_course():
+def create_course(user_id):
 	payload = request.get_json()
 	payload['course_name'] = payload['course_name'].lower()
 	print(payload)
-	try:
-		models.Course.get(models.Course.course_name == payload['course_name'])
+	is_user_admin = models.User.get_by_id(user_id)
+	print(is_user_admin.is_admin)
+	if is_user_admin.is_admin == True: 
+		try:
+			models.Course.get(models.Course.course_name == payload['course_name'])
+			return jsonify(
+				data={},
+				message=f"A course with this title has already been created.",
+				status=401,
+			), 401
+		except models.DoesNotExist:
+				new_course = models.Course.create(
+					course_name=payload['course_name'],
+					course_keywords=payload['course_keywords'],
+					administrator=current_user.id,
+					description=payload['description'],
+					certification=payload['certification']
+				)
+		new_course_dict = model_to_dict(new_course)
+		new_course_dict['administrator'].pop('password')
 		return jsonify(
-			data={},
-			message=f"A course with this title has already been created.",
-			status=401,
-		), 401
-	except models.DoesNotExist:
-			new_course = models.Course.create(
-				course_name=payload['course_name'],
-				course_keywords=payload['course_keywords'],
-				administrator=current_user.id,
-				description=payload['description'],
-				certification=payload['certification']
-			)
-	new_course_dict = model_to_dict(new_course)
-	new_course_dict['administrator'].pop('password')
-	return jsonify(
-		data=course_dict,
-		message=f"User {new_course_dict['adminstrator']} has successfully created a new class called {new_course_dict['course_name']}",
-		status=201
-	),201 
+			data=new_course_dict,
+			message=f"User {new_course_dict['administrator']} has successfully created a new class called {new_course_dict['course_name']}",
+			status=201
+		),201 
+	else:
+		return jsonify(
+			data={
+				'error':'403 Forbidden'
+			},
+			message='You are not authorized to create a course.',
+			status=403
+		), 403
 
 @courses.route('/<id>', methods=['PUT'])
 @login_required

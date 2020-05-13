@@ -34,7 +34,6 @@ class Milestone(Model):
 	course_from = ForeignKeyField( Course , backref=' milestones')
 	prompt = TextField()
 	resources = CharField() # cloudinary
-	answer = CharField() # cloudinary
 	class Meta:
 		database = DATABASE
 

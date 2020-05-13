@@ -34,7 +34,7 @@ def create_milestone(course_id):
 		course_from=course_id,
 		prompt=payload['prompt'],
 		resources=payload['resources'],
-		answer=payload['answer']
+	
 	)
 	new_milestone_dict = model_to_dict(new_milestone)
 	print('here is the new new_milestone_dict')
