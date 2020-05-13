@@ -34,6 +34,20 @@ def user_course_index():
 			'status': 200
 			}), 200
 
+@courses.route('/<id>', methods=['GET'])
+@login_required
+def show_course(id):
+	course = models.Course.get_by_id(id)
+	course_dict = model_to_dict(course)
+	course_dict['administrator'].pop('password')
+	return jsonify(
+		data=course_dict,
+		message=f"Found dog with id {id}",
+		status=200
+	), 200
+	
+
+
 @courses.route('/create', methods=['POST'])
 @login_required
 def create_course():
