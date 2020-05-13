@@ -97,6 +97,7 @@ def update_dog(id):
 	), 200
 
 @courses.route('/<id>', methods=['DELETE'])
+@login_required
 def delete_course(id):
 	delete_query = models.Course.delete().where(models.Course.id == id)
 	num_of_rows_deleted = delete_query.execute()

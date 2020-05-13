@@ -46,6 +46,8 @@ def create_milestone(course_id):
 		status=201
 	),201 
 
+
+
 @milestones.route('/<course_id>/<id>', methods=['GET'])
 @login_required
 def show_milestone(course_id, id):
@@ -54,9 +56,23 @@ def show_milestone(course_id, id):
 	milestone_dict['course_from']['administrator'].pop('password')
 	return jsonify(
 		data=milestone_dict,
-		message=f"Found milestone with id {id}",
+		message=f"Found milestone with id {id} from course {milestone_dict['course_from']['course_name']}",
 		status=200
 	), 200
 	
+@milestones.route('/<course_id>/<id>', methods=['DELETE'])
+@login_required
+def delete_milestone(course_id, id):
+	delete_query = models.Milestone.delete().where(models.Milestone.id == id)
+	num_of_rows_deleted = delete_query.execute()
+	print(num_of_rows_deleted)
+	return jsonify(
+		data={},
+		message="Successfully deleted {} course(s) with the id {}".format(num_of_rows_deleted, id),
+		status=200,
+	), 200
+
+
+
 
 
