@@ -42,7 +42,7 @@ Class Submission():
 	
 	milestone_sub = ForiegnKeyField( Mileston, backref='submissions')
 
-	student_sub = ForiegnKeyField( Mileston, backref='submissions')
+	student_sub = ForiegnKeyField( User , backref='submissions')
 
 	answer = CharField() --upload with cloudinare 
 

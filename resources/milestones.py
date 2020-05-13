@@ -52,8 +52,8 @@ def create_milestone(course_id):
 			data={
 				'error': 'Forbidden Action'
 			},
-			message="You are not allowed to create a milestone for this course",
-			status=403
+			message="You are not allowed to create a milestone for this course", 
+			status=403 
 		), 403 
 
 
@@ -73,20 +73,31 @@ def show_milestone(course_id, id):
 @login_required
 def update_Milestone(course_id, id):
 	payload = request.get_json()
-	update_query = models.Milestone.update(
-		prompt=payload['prompt'],
-		resources=payload['resources'],
-		answer=payload['answer']
-	).where(models.Milestone.id == id)
-	num_of_rows_modified = update_query.execute()
-	updated_milestone = models.Milestone.get_by_id(id)
-	updated_milestone_dict = model_to_dict(updated_milestone)
-	updated_milestone_dict['course_from']['administrator'].pop('password')
-	return jsonify(
-		data=updated_milestone_dict,
-		message=f"Successfully updated milestone {id} from course {updated_milestone_dict['course_from']['course_name']}",
-		status=200
-	), 200
+	course = models.Course.get_by_id(course_id)
+	course_dict = model_to_dict(course)
+	admin_id = course_dict['administrator']['id']
+	if current_user.id == admin_id :
+		update_query = models.Milestone.update(
+			prompt=payload['prompt'],
+			resources=payload['resources'],
+		).where(models.Milestone.id == id)
+		num_of_rows_modified = update_query.execute()
+		updated_milestone = models.Milestone.get_by_id(id)
+		updated_milestone_dict = model_to_dict(updated_milestone)
+		updated_milestone_dict['course_from']['administrator'].pop('password')
+		return jsonify(
+			data=updated_milestone_dict,
+			message=f"Successfully updated milestone {id} from course {updated_milestone_dict['course_from']['course_name']}",
+			status=200
+		), 200
+	else: 
+		return jsonify(
+			data={
+				'error': 'Forbidden Action'
+			},
+			message="You are not allowed to update this milestone", 
+			status=403 
+		), 403 
 
 	
 @milestones.route('/<course_id>/<id>', methods=['DELETE'])
