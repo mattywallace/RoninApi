@@ -90,22 +90,33 @@ def create_course(user_id):
 
 @courses.route('/<id>', methods=['PUT'])
 @login_required
-def update_dog(id):
+def updated_course(id):
 	payload = request.get_json()
-	update_query = models.Course.update(
-		course_name=payload['course_name'],
-		course_keywords=payload['course_keywords'],
-		description=payload['description'],
-		certification=payload['certification']
-	).where(models.Course.id == id)
-	num_of_rows_modified = update_query.execute()
-	updated_course = models.Course.get_by_id(id)
-	updated_course_dict = model_to_dict(updated_course)
-	return jsonify(
-		data=updated_course_dict,
-		message=f"Successfully updated course with id {id}",
-		status=200
-	), 200
+	current_course = models.Course.get_by_id(id)
+	print(current_course.administrator.id)
+	if current_user.id == current_course.administrator.id:
+		update_query = models.Course.update(
+			course_name=payload['course_name'],
+			course_keywords=payload['course_keywords'],
+			description=payload['description'],
+			certification=payload['certification']
+		).where(models.Course.id == id)
+		num_of_rows_modified = update_query.execute()
+		updated_course = models.Course.get_by_id(id)
+		updated_course_dict = model_to_dict(updated_course)
+		return jsonify(
+			data=updated_course_dict,
+			message=f"Successfully updated course with id {id}",
+			status=200
+		), 200
+	else: 
+		return jsonify(
+			data={
+				'error': 'Forbidden Action'
+			},
+			message= "You are not authorized to edit this course",
+			status=403,
+		), 403 
 
 @courses.route('/<id>', methods=['DELETE'])
 @login_required
