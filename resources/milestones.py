@@ -46,8 +46,6 @@ def create_milestone(course_id):
 		status=201
 	),201 
 
-
-
 @milestones.route('/<course_id>/<id>', methods=['GET'])
 @login_required
 def show_milestone(course_id, id):
@@ -59,6 +57,26 @@ def show_milestone(course_id, id):
 		message=f"Found milestone with id {id} from course {milestone_dict['course_from']['course_name']}",
 		status=200
 	), 200
+
+@milestones.route('/<course_id>/<id>', methods=['PUT'])
+@login_required
+def update_Milestone(course_id, id):
+	payload = request.get_json()
+	update_query = models.Milestone.update(
+		prompt=payload['prompt'],
+		resources=payload['resources'],
+		answer=payload['answer']
+	).where(models.Milestone.id == id)
+	num_of_rows_modified = update_query.execute()
+	updated_milestone = models.Milestone.get_by_id(id)
+	updated_milestone_dict = model_to_dict(updated_milestone)
+	updated_milestone_dict['course_from']['administrator'].pop('password')
+	return jsonify(
+		data=updated_milestone_dict,
+		message=f"Successfully updated milestone {id} from course {updated_milestone_dict['course_from']['course_name']}",
+		status=200
+	), 200
+
 	
 @milestones.route('/<course_id>/<id>', methods=['DELETE'])
 @login_required
@@ -71,6 +89,8 @@ def delete_milestone(course_id, id):
 		message="Successfully deleted {} course(s) with the id {}".format(num_of_rows_deleted, id),
 		status=200,
 	), 200
+
+
 
 
 
