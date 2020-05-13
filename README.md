@@ -49,7 +49,7 @@ Class Submission():
 	approved = BooleanField()
 
 
-Class Milestone():""
+Class Milestone():
 
 	course = ForiegnKeyField( Course, backref=' milestones')
 

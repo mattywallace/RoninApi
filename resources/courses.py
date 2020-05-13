@@ -42,7 +42,7 @@ def show_course(id):
 	course_dict['administrator'].pop('password')
 	return jsonify(
 		data=course_dict,
-		message=f"Found dog with id {id}",
+		message=f"Found course with id {id}",
 		status=200
 	), 200
 	
