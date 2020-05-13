@@ -4,6 +4,7 @@ from resources.users import users
 from resources.courses import courses
 from resources.milestones import milestones
 from resources.enrollments import enrollments
+from resources.submissions import submissions
 
 import models 
 from flask_cors import CORS
@@ -16,7 +17,7 @@ PORT=8000
 app = Flask(__name__)
 
 app.secret_key = "Wake up, Neo..."
-login_manager =LoginManager()
+login_manager = LoginManager()
 login_manager.init_app(app)
 
 @login_manager.user_loader
@@ -30,11 +31,15 @@ def load_user(user_id):
 
 CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
 CORS(courses, origins=['http://localhost3000'], supports_credentials=True)
+CORS(milestones, origins=['http://localhost3000'], supports_credentials=True)
+CORS(enrollments, origins=['http://localhost3000'], supports_credentials=True)
+CORS(submissions, origins=['http://localhost3000'], supports_credentials=True)
 
 app.register_blueprint(users, url_prefix='/api/v1/users/')
 app.register_blueprint(courses, url_prefix='/api/v1/courses/')
 app.register_blueprint(milestones, url_prefix='/api/v1/milestones/')
 app.register_blueprint(enrollments, url_prefix='/api/v1/enrollments/')
+app.register_blueprint(submissions, url_prefix='/api/v1/submissions/')
 
 
 @app.route('/json-test')
@@ -45,3 +50,5 @@ def testjson():
 if __name__ == '__main__':
 	models.initialize()
 	app.run(debug=DEBUG, port=PORT)
+
+	
