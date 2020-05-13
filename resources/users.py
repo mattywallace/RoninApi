@@ -86,14 +86,37 @@ def login():
 		), 401 
 
 
-
-
+@users.route('/<id>', methods=['get'])
+@login_required
+def show_user(id):
+	try:
+		current_user.id == id 
+		user = models.User.get_by_id(id)
+		user_dict = model_to_dict(user)
+		user_dict.pop('password')
+		return jsonify(
+			data=user_dict,
+			message=f"Here is user {user_dict['username']}.",
+			status=200
+		), 200
+	except models.DoesNotExist:
+		return jsonify(
+			data={
+			'error':"Forbidden Acrtivity"
+			},
+			message='You are not the user you are trying to activate',
+			status=403
+		), 403 
+		
 
 @users.route('/<id>', methods=['PUT'])
 @login_required
 def update_user(id):
-	if current_user.id == id:
-		payload =request.get_json()
+	print(current_user.id)
+	print(id)
+	payload = request.get_json()
+	try:
+		current_user.id == id
 		update_query = models.User.update(
 			email=payload['email'],
 			username=payload['username'],
@@ -104,10 +127,10 @@ def update_user(id):
 		updated_user_dict = model_to_dict(updated_user)
 		return jsonify(
 			data=updated_user_dict,
-			message=f"Successfully updated with id",
+			message=f"Successfully updated user ",
 			status=200
 		), 200 
-	else:
+	except models.DoesNotExist:
 		return jsonify(
 			data={
 				'error': 'Forbidden Action'
@@ -121,16 +144,23 @@ def update_user(id):
 @users.route('/<id>', methods=['DELETE'])
 @login_required
 def delete_user(id):
-	if current_user.id == id:
-		delete_query = models.User.delete().where(models.User.id == id)
-		num_of_rows_deleted = delete_query.execute()
-		print(num_of_rows_deleted)
-		return jsonify(
-			data={},
-			message='Successfully deleted {} user with id {}'.format(num_of_rows_deleted, id),
-			status=200
-		), 200
-	else: 
+	try:
+		if str(current_user.id) == (id):
+			delete_query = models.User.delete().where(models.User.id == id)
+			num_of_rows_deleted = delete_query.execute()
+			print(num_of_rows_deleted)
+			return jsonify(
+				data={},
+				message='Successfully deleted {} user with id {}'.format(num_of_rows_deleted, id),
+				status=200
+			), 200
+		else:
+			return jsonify(
+				data={},
+				message='Youre not the correct individule',
+				status=403
+			), 403
+	except models.DoesNotExist: 
 		return jsonify(
 			data={
 				'error': 'Forbidden Action'

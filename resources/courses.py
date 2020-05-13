@@ -76,7 +76,7 @@ def create_course(user_id):
 		new_course_dict['administrator'].pop('password')
 		return jsonify(
 			data=new_course_dict,
-			message=f"User {new_course_dict['administrator']} has successfully created a new class called {new_course_dict['course_name']}",
+			message=f"User {new_course_dict['administrator']['username']} has successfully created a new class called {new_course_dict['course_name']}",
 			status=201
 		),201 
 	else:

@@ -103,14 +103,26 @@ def update_Milestone(course_id, id):
 @milestones.route('/<course_id>/<id>', methods=['DELETE'])
 @login_required
 def delete_milestone(course_id, id):
-	delete_query = models.Milestone.delete().where(models.Milestone.id == id)
-	num_of_rows_deleted = delete_query.execute()
-	print(num_of_rows_deleted)
-	return jsonify(
-		data={},
-		message="Successfully deleted {} course(s) with the id {}".format(num_of_rows_deleted, id),
-		status=200,
-	), 200
+	course = models.Course.get_by_id(course_id)
+	course_dict = model_to_dict(course)
+	admin_id = course_dict['administrator']['id']
+	if current_user.id == admin_id:
+		delete_query = models.Milestone.delete().where(models.Milestone.id == id)
+		num_of_rows_deleted = delete_query.execute()
+		print(num_of_rows_deleted)
+		return jsonify(
+			data={},
+			message="Successfully deleted {} course(s) with the id {}".format(num_of_rows_deleted, id),
+			status=200,
+		), 200
+	else: 
+		return jsonify(
+			data={
+				'error': 'Forbidden Action'
+			},
+			message="You are not allowed to delete this this milestone", 
+			status=403 
+		), 403 
 
 
 
