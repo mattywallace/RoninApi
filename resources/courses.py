@@ -121,15 +121,26 @@ def updated_course(id):
 @courses.route('/<id>', methods=['DELETE'])
 @login_required
 def delete_course(id):
-	delete_query = models.Course.delete().where(models.Course.id == id)
-	num_of_rows_deleted = delete_query.execute()
-	print(num_of_rows_deleted)
-	return jsonify(
-		data={},
-		message="Successfully deleted {} course with the id {}".format(num_of_rows_deleted, id),
-		status=200,
-	), 200
-	
+	current_course = models.Course.get_by_id(id)
+	print(current_course.administrator.id)
+	if current_user.id == current_course.administrator.id:
+		delete_query = models.Course.delete().where(models.Course.id == id)
+		num_of_rows_deleted = delete_query.execute()
+		print(num_of_rows_deleted)
+		return jsonify(
+			data={},
+			message="Successfully deleted {} course with the id {}".format(num_of_rows_deleted, id),
+			status=200,
+		), 200
+	else: 
+		return jsonify(
+			data={
+				'error': 'Forbidden Action'
+			},
+			message= "You are not authorized to delete this course",
+			status=403,
+		), 403 
+
 
 
 
