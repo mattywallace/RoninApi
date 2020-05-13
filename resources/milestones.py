@@ -45,3 +45,18 @@ def create_milestone(course_id):
 		message=f"A new milestone has been adde to course id {course.course_name}",
 		status=201
 	),201 
+
+@milestones.route('/<course_id>/<id>', methods=['GET'])
+@login_required
+def show_milestone(course_id, id):
+	milestone = models.Milestone.get_by_id(id)
+	milestone_dict = model_to_dict(milestone)
+	milestone_dict['course_from']['administrator'].pop('password')
+	return jsonify(
+		data=milestone_dict,
+		message=f"Found milestone with id {id}",
+		status=200
+	), 200
+	
+
+
