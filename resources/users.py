@@ -2,7 +2,7 @@ import models
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import generate_password_hash, check_password_hash
 from playhouse.shortcuts import model_to_dict
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 
 
 
@@ -78,46 +78,66 @@ def login():
 				status=401
 			), 401
 	except models.DoesNotExist:
-		print('Username already exists')
+		print('Username exists')
 		return jsonify(
 			data={},
 			message='Email or Password is incorrect',
 			status=401
-			), 401 
+		), 401 
 
 
 
 
 
 @users.route('/<id>', methods=['PUT'])
+@login_required
 def update_user(id):
-	payload =request.get_json()
-	update_query = models.User.update(
-		email=payload['email'],
-		username=payload['username'],
-		password=payload['password'],
-	).where(models.User.id == id)
-	num_of_rows_modified = update_query.execute()
-	updated_user = models.User.get_by_id(id)
-	updated_user_dict = model_to_dict(updated_user)
-	return jsonify(
-		data=updated_user_dict,
-		message=f"Successfully updated with id",
-		status=200
-	), 200 
+	if current_user.id == id:
+		payload =request.get_json()
+		update_query = models.User.update(
+			email=payload['email'],
+			username=payload['username'],
+			password=payload['password'],
+		).where(models.User.id == id)
+		num_of_rows_modified = update_query.execute()
+		updated_user = models.User.get_by_id(id)
+		updated_user_dict = model_to_dict(updated_user)
+		return jsonify(
+			data=updated_user_dict,
+			message=f"Successfully updated with id",
+			status=200
+		), 200 
+	else:
+		return jsonify(
+			data={
+				'error': 'Forbidden Action'
+			},
+			message= "You are not authorized to update this user",
+			status=403,
+		), 403 
 
 
 
 @users.route('/<id>', methods=['DELETE'])
+@login_required
 def delete_user(id):
-	delete_query = models.User.delete().where(models.User.id == id)
-	num_of_rows_deleted = delete_query.execute()
-	print(num_of_rows_deleted)
-	return jsonify(
-		data={},
-		message='Successfully deleted {} user with id {}'.format(num_of_rows_deleted, id),
-		status=200
-	), 200
+	if current_user.id == id:
+		delete_query = models.User.delete().where(models.User.id == id)
+		num_of_rows_deleted = delete_query.execute()
+		print(num_of_rows_deleted)
+		return jsonify(
+			data={},
+			message='Successfully deleted {} user with id {}'.format(num_of_rows_deleted, id),
+			status=200
+		), 200
+	else: 
+		return jsonify(
+			data={
+				'error': 'Forbidden Action'
+			},
+			message= "You are not authorized to delete this user",
+			status=403,
+		), 403 
 
 
 
