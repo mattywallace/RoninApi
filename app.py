@@ -1,4 +1,4 @@
-from flask import Flask, jsonify 
+from flask import Flask, jsonify, g
 
 from resources.users import users
 from resources.courses import courses
@@ -25,21 +25,44 @@ def load_user(user_id):
 	try:
 		print("loading the following user")
 		user = models.User.get_by_id(user_id)
+		print(user)
 		return user 
 	except models.DoesNotExist:
 		return None
 
+@login_manager.unauthorized_handler
+def unauthorized():
+  return jsonify(
+    data={
+      'error': 'User not logged in'
+    },
+    message="You must be logged in to access that resource",
+    status=401
+  ), 401
+
 CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(courses, origins=['http://localhost3000'], supports_credentials=True)
-CORS(milestones, origins=['http://localhost3000'], supports_credentials=True)
-CORS(enrollments, origins=['http://localhost3000'], supports_credentials=True)
-CORS(submissions, origins=['http://localhost3000'], supports_credentials=True)
+CORS(courses, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(milestones, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(enrollments, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(submissions, origins=['http://localhost:3000'], supports_credentials=True)
 
 app.register_blueprint(users, url_prefix='/api/v1/users/')
 app.register_blueprint(courses, url_prefix='/api/v1/courses/')
 app.register_blueprint(milestones, url_prefix='/api/v1/milestones/')
 app.register_blueprint(enrollments, url_prefix='/api/v1/enrollments/')
 app.register_blueprint(submissions, url_prefix='/api/v1/submissions/')
+
+@app.before_request
+def before_request():
+	print("you should see this before each request")
+	g.db = models.DATABASE
+	g.db.connect()
+
+@app.after_request
+def after_request(response):
+	print("you should see this after each request")
+	g.db.close()
+	return response
 
 
 @app.route('/json-test')

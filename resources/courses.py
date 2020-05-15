@@ -10,6 +10,7 @@ courses = Blueprint('courses', 'courses')
 @courses.route('/', methods=['GET'])
 def courses_index():
 	result = models.Course.select()
+	print('THIS IS THE CURRENT USER', current_user)
 	print(result);
 	course_dicts =[model_to_dict(course) for course in result]
 	for course_dict in course_dicts:
@@ -48,16 +49,17 @@ def show_course(id):
 	
 
 
-@courses.route('/create/<user_id>', methods=['POST'])
-@login_required
-def create_course(user_id):
+@courses.route('/create', methods=['POST'])
+def create_course():
+	course_keywords = ''
 	payload = request.get_json()
+	if 'course_keywords' in payload:
+		course_keywords = payload['course_keywords']
 	payload['course_name'] = payload['course_name'].lower()
 	print(payload)
-	is_user_admin = models.User.get_by_id(user_id)
-	print(is_user_admin.is_admin)
-	if is_user_admin.is_admin == True: 
+	if current_user.is_admin:
 		try:
+			print('Here is the denied course ')
 			models.Course.get(models.Course.course_name == payload['course_name'])
 			return jsonify(
 				data={},
@@ -67,11 +69,12 @@ def create_course(user_id):
 		except models.DoesNotExist:
 				new_course = models.Course.create(
 					course_name=payload['course_name'],
-					course_keywords=payload['course_keywords'],
+					course_keywords=course_keywords,
 					administrator=current_user.id,
 					description=payload['description'],
 					certification=payload['certification']
 				)
+				print('here is the created course')
 		new_course_dict = model_to_dict(new_course)
 		new_course_dict['administrator'].pop('password')
 		return jsonify(
@@ -80,6 +83,7 @@ def create_course(user_id):
 			status=201
 		),201 
 	else:
+		print('not logged in')
 		return jsonify(
 			data={
 				'error':'403 Forbidden'

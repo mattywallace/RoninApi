@@ -59,10 +59,12 @@ def login():
 	payload['email'] = payload['email'].lower()
 	payload['username'] = payload['username'].lower()
 	try:
+		print ('checking email')
 		user = models.User.get(models.User.email == payload['email'])
 		user_dict = model_to_dict(user)
 		password_is_good = check_password_hash(user_dict['password'], payload['password'])
 		if(password_is_good):
+			print('eerything')
 			login_user(user)
 			user_dict.pop('password')
 			return jsonify(
@@ -116,20 +118,26 @@ def update_user(id):
 	print(id)
 	payload = request.get_json()
 	try:
-		current_user.id == id
-		update_query = models.User.update(
-			email=payload['email'],
-			username=payload['username'],
-			password=payload['password'],
-		).where(models.User.id == id)
-		num_of_rows_modified = update_query.execute()
-		updated_user = models.User.get_by_id(id)
-		updated_user_dict = model_to_dict(updated_user)
-		return jsonify(
-			data=updated_user_dict,
-			message=f"Successfully updated user ",
-			status=200
-		), 200 
+		if str(current_user.id) == id:
+			update_query = models.User.update(
+				email=payload['email'],
+				username=payload['username'],
+				password=payload['password'],
+			).where(models.User.id == id)
+			num_of_rows_modified = update_query.execute()
+			updated_user = models.User.get_by_id(id)
+			updated_user_dict = model_to_dict(updated_user)
+			return jsonify(
+				data=updated_user_dict,
+				message=f"Successfully updated user ",
+				status=200
+			), 200 
+		else: 
+			return jsonify(
+				data={},
+				message='You are forbidden from this action',
+				status=403
+			), 403
 	except models.DoesNotExist:
 		return jsonify(
 			data={

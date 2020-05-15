@@ -16,7 +16,7 @@ class User(UserMixin, Model):
 
 class Course(Model):	
 	course_name = CharField(unique=True)	
-	course_keywords = CharField() 	
+	course_keywords = CharField(null = False) 	
 	administrator = ForeignKeyField( User , backref='courses')	
 	description = TextField()	
 	certification = BooleanField()
