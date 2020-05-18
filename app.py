@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, g
 
 from resources.users import users
@@ -68,6 +69,11 @@ def after_request(response):
 @app.route('/json-test')
 def testjson():
 	return jsonify(['matthew', 'mark', 'luke', 'john'])
+
+
+if 'ON_HEROKU' in os.environ: 
+  print('\non heroku!')
+  models.initialize()
 
 
 if __name__ == '__main__':

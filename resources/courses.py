@@ -101,7 +101,6 @@ def updated_course(id):
 	if current_user.id == current_course.administrator.id:
 		update_query = models.Course.update(
 			course_name=payload['course_name'],
-			course_keywords=payload['course_keywords'],
 			description=payload['description'],
 			certification=payload['certification']
 		).where(models.Course.id == id)
