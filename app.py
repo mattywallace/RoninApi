@@ -41,11 +41,11 @@ def unauthorized():
     status=401
   ), 401
 
-CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(courses, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(milestones, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(enrollments, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(submissions, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(users, origins=['http://localhost:3000', 'https://roninapp.herokuapp.com'], supports_credentials=True)
+CORS(courses, origins=['http://localhost:3000', 'https://roninapp.herokuapp.com'], supports_credentials=True)
+CORS(milestones, origins=['http://localhost:3000', 'https://roninapp.herokuapp.com'], supports_credentials=True)
+CORS(enrollments, origins=['http://localhost:3000', 'https://roninapp.herokuapp.com'], supports_credentials=True)
+CORS(submissions, origins=['http://localhost:3000', 'https://roninapp.herokuapp.com'], supports_credentials=True)
 
 app.register_blueprint(users, url_prefix='/api/v1/users/')
 app.register_blueprint(courses, url_prefix='/api/v1/courses/')
