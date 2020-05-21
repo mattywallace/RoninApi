@@ -6,7 +6,7 @@ from playhouse.db_url import connect
 
 
 
-if 'ON_HEROKU' is os.environ:
+if 'ON_HEROKU' in os.environ:
 	DATABASE = connect(os.environ.get('DATABASE_URL'))
 
 else: 

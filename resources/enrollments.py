@@ -11,18 +11,36 @@ enrollments = Blueprint('enrollments', 'enrollments')
 @enrollments.route('/', methods=['GET'])
 def enrollments_index():
 	result = models.Enrollment.select()
-	print('THIS IS THE CURRENT USER', current_user)
-	print(result);
-	enrollment_dicts =[model_to_dict(enrollment) for enrollment in result]
-	for enrollment_dict in enrollment_dicts:
+	enrollments_dicts = []
+	for enrollment in result :
+		enrollment_dict = model_to_dict(enrollment)
 		enrollment_dict['enrolled_user'].pop('password')
+		enrollment_dict['enrolled_course']['administrator'].pop('password')
+		milestones = models.Milestone.select().wehre(models.Milestone.course_from == enrollment.id)
+		enrollment_dict['milestones'] = [model_to_dict(milestones) for milestone in milestones]
+		enrollment_dicts.append(course_dict)
+	# print(result);
+	# enrollment_dicts =[model_to_dict(enrollment) for enrollment in result]
+	# for enrollment_dict in enrollment_dicts:
+	# 	enrollment_dict['enrolled_user'].pop('password')
 	return jsonify({
 		'data': enrollment_dicts,
 		'message': f" There are currently {len(enrollment_dicts)} enrollments in the database.",
 		'status': 200
 		}), 200 
 
-
+@enrollments.route('/<userId>', methods=['GET'])
+@login_required
+def user_enrollments_index(userId):
+	current_user_enrollment_dicts = [model_to_dict(enrollment) for enrollment in current_user.enrollments]
+	for enrollment_dict in current_user_enrollment_dicts:
+		enrollment_dict['enrolled_user'].pop('password')
+		print(current_user_enrollment_dicts)
+		return jsonify({
+			'data': current_user_enrollment_dicts,
+			'message': f"There are currently {len(current_user_enrollment_dicts)} enrollments for the THIS USER",
+			'status': 200
+			}), 200
 
 @enrollments.route('/<course_id>/<user_id>', methods=['POST'])
 @login_required

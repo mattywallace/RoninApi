@@ -10,11 +10,18 @@ courses = Blueprint('courses', 'courses')
 @courses.route('/', methods=['GET'])
 def courses_index():
 	result = models.Course.select()
-	print('THIS IS THE CURRENT USER', current_user)
-	print(result);
-	course_dicts =[model_to_dict(course) for course in result]
-	for course_dict in course_dicts:
+	course_dicts = []
+	for course in result :
+		course_dict = model_to_dict(course)
 		course_dict['administrator'].pop('password')
+		milestones = models.Milestone.select().where(models.Milestone.course_from == course.id )
+		course_dict['milestones'] = [model_to_dict(milestone) for milestone in milestones]
+		course_dicts.append(course_dict)
+	# course_dicts = [model_to_dict(course) for course in result]
+	# print(course_dicts)
+	# for course_dict in course_dicts:
+	# 	course_dict['administrator'].pop('password')
+	# 	course_dict['milestones'] = [models_to_dict(milestone) for course in result]
 	return jsonify({
 		'data': course_dicts,
 		'message': f" There are currently {len(course_dicts)} courses in the database.",
@@ -34,6 +41,7 @@ def user_course_index():
 			'message': f"There are currently {len(current_user_course_dicts)} courses for the THIS USER",
 			'status': 200
 			}), 200
+
 
 @courses.route('/<id>', methods=['GET'])
 @login_required
@@ -77,6 +85,7 @@ def create_course():
 				print('here is the created course')
 		new_course_dict = model_to_dict(new_course)
 		new_course_dict['administrator'].pop('password')
+		new_course_dict['milestones'] = []
 		return jsonify(
 			data=new_course_dict,
 			message=f"User {new_course_dict['administrator']['username']} has successfully created a new class called {new_course_dict['course_name']}",
@@ -91,6 +100,9 @@ def create_course():
 			message='You are not authorized to create a course.',
 			status=403
 		), 403
+
+
+
 
 @courses.route('/<id>', methods=['PUT'])
 @login_required
@@ -120,6 +132,9 @@ def updated_course(id):
 			message= "You are not authorized to edit this course",
 			status=403,
 		), 403 
+
+
+
 
 @courses.route('/<id>', methods=['DELETE'])
 @login_required

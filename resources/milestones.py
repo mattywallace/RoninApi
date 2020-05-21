@@ -7,8 +7,7 @@ from flask_login import current_user, login_required
 milestones = Blueprint('milestones', 'milestones')
 
 
-# this route needs to be changed so that it will only see the 
-# milestones form the course_id
+
 
 @milestones.route('/<course_id>', methods=['GET'])
 @login_required
@@ -45,8 +44,8 @@ def create_milestone(course_id):
 		return jsonify(
 			data=new_milestone_dict,
 			message=f"A new milestone has been adde to course id {course.course_name}",
-			status=201
-		), 201 
+			status=200
+		), 200 
 	else:
 		return jsonify(
 			data={
@@ -68,6 +67,7 @@ def show_milestone(course_id, id):
 		message=f"Found milestone with id {id} from course {milestone_dict['course_from']['course_name']}",
 		status=200
 	), 200
+
 
 @milestones.route('/<course_id>/<id>', methods=['PUT'])
 @login_required

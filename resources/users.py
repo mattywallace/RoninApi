@@ -88,6 +88,15 @@ def login():
 		), 401 
 
 
+@users.route('/currentuser', methods=['GET'])
+def get_logged_in_user():
+	print(current_user)
+	print(type(current_user))
+	user_dict = model_to_dict(current_user)
+	user_dict.pop('password')
+	return jsonify(data=user_dict), 200
+
+
 @users.route('/<id>', methods=['get'])
 @login_required
 def show_user(id):
